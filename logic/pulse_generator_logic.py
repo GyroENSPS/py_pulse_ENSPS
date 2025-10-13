@@ -44,6 +44,8 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         return var_values
 
     def export_for_pulse_viewer(self):
+        self.tabWidget.setCurrentIndex(0)
+
 
         rows = self.tableWidget.rowCount()
         cols = self.tableWidget.columnCount()
@@ -306,14 +308,19 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         min_meas = self.spinBox_min.value()
         max_meas = self.spinBox_max.value()
         step_meas = self.spinBox_step.value()
-        # self.pulseViewer(pulse_durations, pulse_matrix, variable_index, "test", channel_labels, min_meas, max_meas)
-        num_meas_points = int((max_meas - min_meas)/step_meas)
+        n_repeat = self.spinBox_n_repeat.value()
+        num_meas_points = self.spinBox_num_points.value()
+
         print("number of measurement points : ", num_meas_points)
-        self.sequenceGenerator(pulse_durations, pulse_matrix, variable_index, param_per_col, 10, 1, min_meas, max_meas)
+        self.sequenceGenerator(pulse_durations, pulse_matrix, variable_index, param_per_col, 10, n_repeat, min_meas, max_meas)
 
     def sequenceGenerator(self, pulses_length, IO_states, var_index, param_per_col, num_of_points, n_repeat, min_meas, max_meas):
         ############# Generate measurement sequences
 
+        point_trigger_channel = self.comboBox_trigger_per_point_channel.currentIndex()
+        point_trigger_duration = self.spinBox_trigger_per_point_duration.value()
+        sequence_trigger_channel = self.comboBox_trigger_per_sequence_channel.currentIndex()
+        sequence_trigger_duration = self.spinBox_trigger_per_sequence_duration.value()
 
         row_count = self.tableWidget_var.rowCount()
         var_names = [None]*row_count
@@ -331,7 +338,9 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         # print(var_names, var_instructions, var_conds_idx)
         meas_points = np.linspace(min_meas, max_meas, num_of_points, dtype=int)
         print(meas_points)
-        all_pulses_durations = np.zeros(len(pulses_length)*num_of_points)
+        all_pulses_durations = np.zeros(len(pulses_length)*num_of_points*n_repeat)
+        point_trigger_timings = np.zeros(2 * num_of_points)
+        point_trigger_IO = np.zeros(2 * num_of_points)
 
         for idx, point in enumerate(meas_points):
             for i in var_conds_idx:
@@ -341,18 +350,33 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
             for idx_param, param_number in enumerate(param_per_col):
                 new_durations[idx_param] = new_params[param_number]
             # print(new_durations)
-            all_pulses_durations[idx * len(pulses_length):(idx+1)*len(pulses_length)] = new_durations
+            point_trigger_timings[idx*2:idx*2+2] = [point_trigger_duration, sum(new_durations)*n_repeat-point_trigger_duration]
+            point_trigger_IO[idx * 2:idx * 2 + 2] = [0, 1]
+            for repeat_idx in range(n_repeat):
+                first_index = (idx * n_repeat + repeat_idx) * len(pulses_length)
+                last_index = (idx * n_repeat + repeat_idx + 1) * len(pulses_length)
+                all_pulses_durations[first_index:last_index] = new_durations
         # print(all_pulses_durations)
 
+        sequence_trigger_timings = [sequence_trigger_duration, sum(all_pulses_durations)-sequence_trigger_duration]
+        sequence_trigger_IO = [1, 0]
+
+
         matrix_shape = np.shape(IO_states)
-        all_IO_states =  np.tile(IO_states, (1, num_of_points))
+        all_IO_states =  np.tile(IO_states, (1, num_of_points*n_repeat))
         # print(np.array_str(all_IO_states))
 
         final_patterns = [None] * len(all_IO_states)
         self.pulse_sequence_view.clear()
         plot_offset = -2.1
         for i in range(len(all_IO_states)):
-            final_patterns[i] = self.patternCalculator(all_pulses_durations, all_IO_states[i])
+            if i == point_trigger_channel:
+                final_patterns[i] = self.patternCalculator(point_trigger_timings, point_trigger_IO)
+            elif i == sequence_trigger_channel:
+                final_patterns[i] = self.patternCalculator(sequence_trigger_timings, sequence_trigger_IO)
+            else:
+                final_patterns[i] = self.patternCalculator(all_pulses_durations, all_IO_states[i])
+
             self.patternViewer(final_patterns[i], i * plot_offset, self.channel_colors[i])
         plt.show()
 
@@ -365,16 +389,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         pulse_length = [tupple[0] for tupple in pattern]
         pulses_timings = [sum(pulse_length[:i // 2]) for i in range(
             len(pulse_length) * 2 + 1)]
-        # print(pulses_timings)
 
-        # IO_R1234_plot_temp = [IO_R1234[j // 2] + plot_offset for j in range(len(IO_R1234) * 2)]
-        # IO_R1234_plot = self.rotate(IO_R1234_plot_temp, -1)
-        # print(IO_R1234_plot)
-
-        # plot_offset = -2.1
-        # plot_offset_counter = 0
-        #
-        # for i in range(len(IO_R1234)):
         IO_R1234_plot_temp = [IO_R1234[j // 2] + plot_offset for j in
                               range(len(IO_R1234) * 2)]
         IO_R1234_plot_temp.append(IO_R1234_plot_temp[-1])
@@ -385,14 +400,8 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         self.pulse_sequence_view.plot(pulses_timings, IO_R1234_plot, label=channel_label,
                              pen=pyqtgraph.mkPen(color=channel_color, width=2), brush=fill_color,
                              fillLevel=plot_offset)
-        print("ok")
 
-        #     plot_offset_counter += 1
-        #
-        # plt.plot(pulses_timings, IO_R1234_plot, marker="+")
-        # plt.fill_between(pulses_timings, IO_R1234_plot, plot_offset, alpha=0.2)
-        #
-        # plt.legend(title="Legend")
+
 
 
 

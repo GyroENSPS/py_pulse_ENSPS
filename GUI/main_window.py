@@ -14,9 +14,10 @@ from dask.array import left_shift
 from logic.pulse_generator_logic import PulseGeneratorLogic
 from logic.pulse_table_logic import PulseTableLogic
 from logic.var_table_logic import VarTableLogic
+from logic.UI_logic import UI_general_logic
 
 
-class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
+class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general_logic):
     def __init__(self, parent=None):
         super(MainWindow, self).__init__(parent)
         # uic.loadUi('GUI/UI_files/table_widget_test.ui', self)
@@ -57,6 +58,12 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.tableWidget.setRowCount(11)
         self.tableWidget.setColumnCount(1)
 
+        channels = ["DO0","DO1","DO2","DO3","DO4","DO5","DO6","DO7","AO0","AO1"]
+        self.comboBox_trigger_per_sequence_channel.addItems(channels)
+        self.comboBox_trigger_per_point_channel.addItems(channels)
+        self.comboBox_trigger_per_sequence_channel.setCurrentIndex(6)
+        self.comboBox_trigger_per_point_channel.setCurrentIndex(7)
+
 
 
         self.tableWidget.setHorizontalHeaderLabels(["laser"])
@@ -86,51 +93,14 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_pulse_sequence.clicked.connect(self.sequence_plotter_button)
         self.pushButton_swap_rows.clicked.connect(self.swap_selected_rows)
 
+        self.spinBox_step.valueChanged.connect(self.update_num_points)
+        self.spinBox_num_points.valueChanged.connect(self.update_step)
+
 
         self.load_var_from_cfg()
         self.load_from_cfg()
 
-    def open_explorer_to_save(self, directory = ""):
-        """
-        Ouvre une fenêtre d'explorateur permettant de créer ou sélectionner un fichier.
-        Retourne le chemin sélectionné.
-        """
-        app = QApplication.instance()
-        if app is None:
-            app = QApplication(sys.argv)
 
-        options = QFileDialog.Options()
-        options |= QFileDialog.DontConfirmOverwrite  # Ne force pas la confirmation d'écrasement
-
-        path_to_file, _ = QFileDialog.getSaveFileName(
-            None,
-            "Créer ou sélectionner un fichier",
-            directory,
-            "Fichier de configuration (*.cfg)",
-            options=options
-        )
-
-        return path_to_file
-
-    def open_explorer_to_load(self, directory=""):
-        """
-        Ouvre une fenêtre de sélection de fichier et retourne le chemin sélectionné.
-        """
-        app = QApplication.instance()
-        if app is None:
-            app = QApplication(sys.argv)
-
-        options = QFileDialog.Options()
-        options |= QFileDialog.ReadOnly
-        path_to_file, _ = QFileDialog.getOpenFileName(
-            None,
-            "Sélectionner un fichier",
-            directory,
-            "Fichier de configuration (*.cfg)",
-            options=options
-        )
-
-        return path_to_file
 
 
 

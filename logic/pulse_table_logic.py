@@ -17,8 +17,14 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
         """
         selected_rows = sorted(set(index.row() for index in self.tableWidget.selectedIndexes()))
 
+        for index in self.tableWidget.selectedIndexes():
+            row = index.row()
+            if row == 9 or row == 10:
+                QMessageBox.warning(self.tableWidget, "Error", "Select only digital channels")
+                return
+
         if len(selected_rows) != 2:
-            QMessageBox.warning(self.tableWidget, "Erreur", "Sélectionne exactement deux lignes à échanger.")
+            QMessageBox.warning(self.tableWidget, "Error", "Please, select exactly two lines")
             return
 
         top_row, bottom_row = selected_rows

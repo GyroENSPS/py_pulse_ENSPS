@@ -21,7 +21,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>0</number>
+       <number>1</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -221,9 +221,9 @@
        <attribute name="title">
         <string>Acquisition parameters</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,5">
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,1,1,5">
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0">
           <property name="topMargin">
            <number>18</number>
           </property>
@@ -266,6 +266,9 @@
             <property name="maximum">
              <number>1000000000</number>
             </property>
+            <property name="value">
+             <number>10</number>
+            </property>
            </widget>
           </item>
           <item>
@@ -289,6 +292,36 @@
            </widget>
           </item>
           <item>
+           <widget class="QLabel" name="label_9">
+            <property name="text">
+             <string>or</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_num_points">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>1000000000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_10">
+            <property name="text">
+             <string>points</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
            <spacer name="horizontalSpacer">
             <property name="orientation">
              <enum>Qt::Horizontal</enum>
@@ -304,14 +337,175 @@
           <item>
            <widget class="QPushButton" name="pushButton_plot_pulse">
             <property name="text">
-             <string>plot pulse sequence</string>
+             <string>plot measurement range</string>
             </property>
            </widget>
           </item>
           <item>
            <widget class="QPushButton" name="pushButton_pulse_sequence">
             <property name="text">
-             <string>generate pulse sequence</string>
+             <string>plot 10 measurement points</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_2">
+          <item>
+           <widget class="QLabel" name="label_11">
+            <property name="text">
+             <string>Trigger per point :</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QCheckBox" name="checkBox_trigger_per_point_check">
+            <property name="text">
+             <string>Enabled</string>
+            </property>
+            <property name="checked">
+             <bool>true</bool>
+            </property>
+            <property name="tristate">
+             <bool>false</bool>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_12">
+            <property name="text">
+             <string>channel :</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_trigger_per_point_channel"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_13">
+            <property name="text">
+             <string>duration (ns):</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_trigger_per_point_duration">
+            <property name="maximum">
+             <number>100000000</number>
+            </property>
+            <property name="value">
+             <number>10000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_3">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_14">
+            <property name="text">
+             <string>Number of repetition per measurement point:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_n_repeat">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100000</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_8">
+          <item>
+           <widget class="QLabel" name="label_15">
+            <property name="text">
+             <string>Trigger per sequence (at the begining of the measurement sequence):</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_16">
+            <property name="text">
+             <string>channel :</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QComboBox" name="comboBox_trigger_per_sequence_channel"/>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_17">
+            <property name="text">
+             <string>duration (ns):</string>
+            </property>
+            <property name="alignment">
+             <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_trigger_per_sequence_duration">
+            <property name="maximum">
+             <number>100000000</number>
+            </property>
+            <property name="value">
+             <number>10000</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <spacer name="horizontalSpacer_4">
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>40</width>
+              <height>20</height>
+             </size>
+            </property>
+           </spacer>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_18">
+            <property name="text">
+             <string>Number of averaged curved:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QSpinBox" name="spinBox_n_average">
+            <property name="minimum">
+             <number>1</number>
+            </property>
+            <property name="maximum">
+             <number>100000</number>
             </property>
            </widget>
           </item>
@@ -335,8 +529,32 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QMenu" name="menuFile">
+    <property name="title">
+     <string>File</string>
+    </property>
+    <addaction name="actionNew_pulse_sequence"/>
+   </widget>
+   <widget class="QMenu" name="menuConfig">
+    <property name="title">
+     <string>Config</string>
+    </property>
+    <addaction name="actionHardware_configuration"/>
+   </widget>
+   <addaction name="menuFile"/>
+   <addaction name="menuConfig"/>
   </widget>
   <widget class="QStatusBar" name="statusbar"/>
+  <action name="actionNew_pulse_sequence">
+   <property name="text">
+    <string>New pulse sequence</string>
+   </property>
+  </action>
+  <action name="actionHardware_configuration">
+   <property name="text">
+    <string>Hardware configuration</string>
+   </property>
+  </action>
  </widget>
  <customwidgets>
   <customwidget>
