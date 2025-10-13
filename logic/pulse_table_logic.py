@@ -1,6 +1,6 @@
 import configparser
 
-from PyQt5.QtWidgets import QCheckBox, QTableWidgetItem, QComboBox, QMainWindow
+from PyQt5.QtWidgets import QCheckBox, QTableWidgetItem, QComboBox, QMainWindow, QMessageBox
 from PyQt5.uic.Compiler.qtproxies import QtWidgets
 from GUI.UI_files.table_widget_test import Ui_MainWindow
 
@@ -8,6 +8,26 @@ from GUI.UI_files.table_widget_test import Ui_MainWindow
 class PulseTableLogic(QMainWindow, Ui_MainWindow):
     def init_first_col(self):
         self.create_column(0)
+
+    def swap_selected_rows(self):
+        """
+        Échange les contenus de deux lignes sélectionnées dans un QTableWidget.
+
+        :param table_widget: Le QTableWidget concerné
+        """
+        selected_rows = sorted(set(index.row() for index in self.tableWidget.selectedIndexes()))
+
+        if len(selected_rows) != 2:
+            QMessageBox.warning(self.tableWidget, "Erreur", "Sélectionne exactement deux lignes à échanger.")
+            return
+
+        top_row, bottom_row = selected_rows
+
+        row1, row2 = self.copy_digital_row(top_row), self.copy_digital_row(bottom_row)
+
+        self.paste_digital_row(bottom_row, row1)
+        self.paste_digital_row(top_row, row2)
+
 
     def create_checkbox(self, row, col_index):
         btn = QCheckBox()
@@ -100,6 +120,7 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
             self.export_for_pulse_viewer()
         except:
             pass
+
     def click_save_pulse_config(self):
         path = self.open_explorer_to_save(directory = "pulse_config")
         self.save_pulse_config(path)
@@ -177,6 +198,23 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
 
             self.create_column(col_idx)
             self.fill_column(col_data, col_idx)
+
+    def copy_digital_row(self, index):
+        col_count = self.tableWidget.columnCount()
+        row = []
+        for col in range(col_count):
+            widget = self.tableWidget.cellWidget(index, col)
+            valeur = widget.isChecked()
+            valeur = str(valeur)
+            row.append(valeur)
+        return row
+
+    def paste_digital_row(self, index, new_row):
+        col_count = len(new_row)
+        for col in range(col_count):
+            widget = self.tableWidget.cellWidget(index, col)
+            widget.setChecked(new_row[col].strip().lower() == "true")
+
 
     def copy_column(self, index):
         row_count = self.tableWidget.rowCount()

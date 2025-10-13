@@ -269,6 +269,48 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         print("number of measurement points : ", num_meas_points)
         self.sequenceGenerator(pulse_durations, pulse_matrix, variable_index, param_per_col, num_meas_points, 1, min_meas, max_meas)
 
+    def sequence_plotter_button(self):
+        rows = self.tableWidget.rowCount()
+        cols = self.tableWidget.columnCount()
+
+        pulse_matrix = np.zeros((10, cols))
+        pulse_durations = np.zeros(cols)
+        variable_index = []
+        pulse_durations_from_user = self.create_python_var()
+        param_per_col = [None]*cols
+
+        for col in range(cols):
+            combo = self.tableWidget.cellWidget(0, col)
+            idx = combo.currentIndex()
+            param_per_col[col] = idx
+            pulse_durations[col] = pulse_durations_from_user[idx]
+            var_checkbox = self.tableWidget_var.cellWidget(idx, 3)
+            if isinstance(var_checkbox, QCheckBox):
+                if var_checkbox.isChecked():
+                    variable_index.append(col)
+            for row in range(1, 9):
+                checkbox = self.tableWidget.cellWidget(row, col)
+                if checkbox.isChecked():
+                    value = 1
+                else:
+                    value = 0
+                pulse_matrix[row - 1][col] = value
+            for row in range(9, 11):
+                item = self.tableWidget.item(row, col)
+                try:
+                    value = item.text()
+                    pulse_matrix[row - 1][col] = value
+                except:
+                    pass
+        channel_labels = ["DO0", "DO1", "DO2", "DO3", "DO4", "DO5", "DO6", "DO7", "AO0", "AO1"]
+        min_meas = self.spinBox_min.value()
+        max_meas = self.spinBox_max.value()
+        step_meas = self.spinBox_step.value()
+        # self.pulseViewer(pulse_durations, pulse_matrix, variable_index, "test", channel_labels, min_meas, max_meas)
+        num_meas_points = int((max_meas - min_meas)/step_meas)
+        print("number of measurement points : ", num_meas_points)
+        self.sequenceGenerator(pulse_durations, pulse_matrix, variable_index, param_per_col, 10, 1, min_meas, max_meas)
+
     def sequenceGenerator(self, pulses_length, IO_states, var_index, param_per_col, num_of_points, n_repeat, min_meas, max_meas):
         ############# Generate measurement sequences
 
@@ -307,30 +349,50 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         # print(np.array_str(all_IO_states))
 
         final_patterns = [None] * len(all_IO_states)
-
+        self.pulse_sequence_view.clear()
+        plot_offset = -2.1
         for i in range(len(all_IO_states)):
             final_patterns[i] = self.patternCalculator(all_pulses_durations, all_IO_states[i])
-            self.patternViewer(final_patterns[i], i * 2)
+            self.patternViewer(final_patterns[i], i * plot_offset, self.channel_colors[i])
         plt.show()
 
 
 
-    def patternViewer(self, pattern, plot_offset):
+    def patternViewer(self, pattern, plot_offset, channel_color, channel_label = ""):
 
         IO_R1234 = [tupple[1] for tupple in pattern]
         # print(np.shape(IO_R1234))
         pulse_length = [tupple[0] for tupple in pattern]
-        pulses_timings = [sum(pulse_length[:i // 2]) for i in range(len(pulse_length) * 2)]
+        pulses_timings = [sum(pulse_length[:i // 2]) for i in range(
+            len(pulse_length) * 2 + 1)]
         # print(pulses_timings)
 
-        IO_R1234_plot_temp = [IO_R1234[j // 2] + plot_offset for j in range(len(IO_R1234) * 2)]
-        IO_R1234_plot = self.rotate(IO_R1234_plot_temp, -1)
+        # IO_R1234_plot_temp = [IO_R1234[j // 2] + plot_offset for j in range(len(IO_R1234) * 2)]
+        # IO_R1234_plot = self.rotate(IO_R1234_plot_temp, -1)
         # print(IO_R1234_plot)
 
-        plt.plot(pulses_timings, IO_R1234_plot, marker="+")
-        plt.fill_between(pulses_timings, IO_R1234_plot, plot_offset, alpha=0.2)
+        # plot_offset = -2.1
+        # plot_offset_counter = 0
+        #
+        # for i in range(len(IO_R1234)):
+        IO_R1234_plot_temp = [IO_R1234[j // 2] + plot_offset for j in
+                              range(len(IO_R1234) * 2)]
+        IO_R1234_plot_temp.append(IO_R1234_plot_temp[-1])
+        IO_R1234_plot = self.rotate(IO_R1234_plot_temp, -1)
+        fill_color = QColor(channel_color)
+        fill_color.setAlphaF(0.2)  # 0.2 = 20% opaque (donc 80% transparent)
 
-        plt.legend(title="Legend")
+        self.pulse_sequence_view.plot(pulses_timings, IO_R1234_plot, label=channel_label,
+                             pen=pyqtgraph.mkPen(color=channel_color, width=2), brush=fill_color,
+                             fillLevel=plot_offset)
+        print("ok")
+
+        #     plot_offset_counter += 1
+        #
+        # plt.plot(pulses_timings, IO_R1234_plot, marker="+")
+        # plt.fill_between(pulses_timings, IO_R1234_plot, plot_offset, alpha=0.2)
+        #
+        # plt.legend(title="Legend")
 
 
 

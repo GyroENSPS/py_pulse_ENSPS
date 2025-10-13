@@ -25,9 +25,9 @@
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
-        <string>Tab 1</string>
+        <string>Pulse configuration</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,0,1">
+       <layout class="QVBoxLayout" name="verticalLayout_2" stretch="1,1">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout" stretch="3,1">
           <item>
@@ -74,7 +74,14 @@
               <item>
                <widget class="QPushButton" name="pushButton_invert">
                 <property name="text">
-                 <string>invert line</string>
+                 <string>invert row</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_swap_rows">
+                <property name="text">
+                 <string>swap selected rows</string>
                 </property>
                </widget>
               </item>
@@ -199,7 +206,24 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,1,2,1,2,1,2,9,1,0">
+         <layout class="QHBoxLayout" name="horizontalLayout_5">
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <widget class="PlotWidget" name="pulse_view" native="true"/>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+      <widget class="QWidget" name="tab_2">
+       <attribute name="title">
+        <string>Acquisition parameters</string>
+       </attribute>
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,5">
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0">
           <property name="topMargin">
            <number>18</number>
           </property>
@@ -294,21 +318,9 @@
          </layout>
         </item>
         <item>
-         <layout class="QHBoxLayout" name="horizontalLayout_5">
-          <property name="bottomMargin">
-           <number>0</number>
-          </property>
-          <item>
-           <widget class="PlotWidget" name="pulse_view" native="true"/>
-          </item>
-         </layout>
+         <widget class="PlotWidget" name="pulse_sequence_view" native="true"/>
         </item>
        </layout>
-      </widget>
-      <widget class="QWidget" name="tab_2">
-       <attribute name="title">
-        <string>Tab 2</string>
-       </attribute>
       </widget>
      </widget>
     </item>

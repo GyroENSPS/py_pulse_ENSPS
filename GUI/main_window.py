@@ -51,6 +51,9 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pulse_view.setBackground("w")
         self.pulse_view.hideAxis('left')
 
+        self.pulse_sequence_view.setBackground("w")
+        self.pulse_sequence_view.hideAxis('left')
+
         self.tableWidget.setRowCount(11)
         self.tableWidget.setColumnCount(1)
 
@@ -80,7 +83,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_load_var.clicked.connect(self.click_load_var_from_cfg)
         self.pushButton_plot_pulse.clicked.connect(self.export_for_pulse_viewer)
         self.pushButton_invert.clicked.connect(self.invert_row)
-        self.pushButton_pulse_sequence.clicked.connect(self.sequence_calculator_button)
+        self.pushButton_pulse_sequence.clicked.connect(self.sequence_plotter_button)
+        self.pushButton_swap_rows.clicked.connect(self.swap_selected_rows)
 
 
         self.load_var_from_cfg()
