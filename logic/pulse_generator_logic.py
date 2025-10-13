@@ -95,8 +95,8 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
         begin_pulses_length = np.copy(pulses_length_R1234)
         end_pulses_length = np.copy(pulses_length_R1234)
-        for var_idx in variable_index:
-            pulses_length_R1234[var_idx] = max_measurement
+        # for var_idx in variable_index:
+        #     pulses_length_R1234[var_idx] = max_measurement
         pulses_timings = [sum(pulses_length_R1234[:i // 2]) for i in range(
             len(pulses_length_R1234) * 2 + 1)]  # calculates the time positions of each pulse edge (oversampling for plotting reasons)
         begin_measurement_range = np.copy(variable_index)
@@ -108,7 +108,8 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
             begin_pulses_length[element] = min_measurement  # changes the pulse sequence with the variable parameter
             begin_measurement_range = sum(begin_pulses_length[:element + 1])
             end_pulses_length[element] = max_measurement  # changes the pulse sequence with the variable parameter
-            end_measurement_range = sum(end_pulses_length[:element + 1])
+            # end_measurement_range = sum(end_pulses_length[:element + 1])
+            end_measurement_range = begin_measurement_range + (max_measurement-min_measurement)
             print(begin_measurement_range, end_measurement_range)
             region = pyqtgraph.LinearRegionItem(
                 values=(begin_measurement_range, end_measurement_range),
