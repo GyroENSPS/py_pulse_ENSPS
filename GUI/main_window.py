@@ -90,15 +90,23 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.pushButton_load_var.clicked.connect(self.click_load_var_from_cfg)
         self.pushButton_plot_pulse.clicked.connect(self.export_for_pulse_viewer)
         self.pushButton_invert.clicked.connect(self.invert_row)
-        self.pushButton_pulse_sequence.clicked.connect(self.sequence_plotter_button)
+        self.pushButton_pulse_sequence.clicked.connect(self.sequence_preview_button)
         self.pushButton_swap_rows.clicked.connect(self.swap_selected_rows)
+        self.pushButton_compute_sequence.clicked.connect(self.sequence_compute_button)
+
 
         self.spinBox_step.valueChanged.connect(self.update_num_points)
         self.spinBox_num_points.valueChanged.connect(self.update_step)
+        self.spinBox_max.valueChanged.connect(self.update_step)
+        self.spinBox_min.valueChanged.connect(self.update_step)
+
+        self.actionpulseStreamer.triggered.connect(self.open_PS_config_window)
 
 
         self.load_var_from_cfg()
         self.load_from_cfg()
+
+        self.PS_conf_win = None
 
 
 

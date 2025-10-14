@@ -221,7 +221,7 @@
        <attribute name="title">
         <string>Acquisition parameters</string>
        </attribute>
-       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,1,1,5">
+       <layout class="QVBoxLayout" name="verticalLayout_5" stretch="1,1,1,3,1">
         <item>
          <layout class="QHBoxLayout" name="horizontalLayout_6" stretch="0,0,0,0,0,0,0,0,0,0,0,0,0">
           <property name="topMargin">
@@ -344,7 +344,7 @@
           <item>
            <widget class="QPushButton" name="pushButton_pulse_sequence">
             <property name="text">
-             <string>plot 10 measurement points</string>
+             <string>preview 10 measurement points</string>
             </property>
            </widget>
           </item>
@@ -514,6 +514,52 @@
         <item>
          <widget class="PlotWidget" name="pulse_sequence_view" native="true"/>
         </item>
+        <item>
+         <layout class="QHBoxLayout" name="horizontalLayout_9">
+          <item>
+           <widget class="QPushButton" name="pushButton_compute_sequence">
+            <property name="text">
+             <string>compute final sequence</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QProgressBar" name="progressBar">
+            <property name="value">
+             <number>0</number>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_19">
+            <property name="text">
+             <string>Number of tupple sent to the PulseStreamer : </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_num_tupple">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_20">
+            <property name="text">
+             <string>Total measurement time : </string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="label_total_time">
+            <property name="text">
+             <string>0</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
        </layout>
       </widget>
      </widget>
@@ -539,7 +585,17 @@
     <property name="title">
      <string>Config</string>
     </property>
-    <addaction name="actionHardware_configuration"/>
+    <widget class="QMenu" name="menuHardware_configuration">
+     <property name="title">
+      <string>Hardware configuration</string>
+     </property>
+     <addaction name="actionpulseStreamer"/>
+     <addaction name="actionMFLI"/>
+     <addaction name="actionKeysight_33512B"/>
+    </widget>
+    <addaction name="menuHardware_configuration"/>
+    <addaction name="actionSave_pulse_config"/>
+    <addaction name="actionLoad_pulse_configuration"/>
    </widget>
    <addaction name="menuFile"/>
    <addaction name="menuConfig"/>
@@ -550,9 +606,29 @@
     <string>New pulse sequence</string>
    </property>
   </action>
-  <action name="actionHardware_configuration">
+  <action name="actionpulseStreamer">
    <property name="text">
-    <string>Hardware configuration</string>
+    <string>pulseStreamer</string>
+   </property>
+  </action>
+  <action name="actionMFLI">
+   <property name="text">
+    <string>MFLI</string>
+   </property>
+  </action>
+  <action name="actionKeysight_33512B">
+   <property name="text">
+    <string>Keysight 33512B</string>
+   </property>
+  </action>
+  <action name="actionSave_pulse_config">
+   <property name="text">
+    <string>Save pulse configuration</string>
+   </property>
+  </action>
+  <action name="actionLoad_pulse_configuration">
+   <property name="text">
+    <string>Load pulse configuration</string>
    </property>
   </action>
  </widget>

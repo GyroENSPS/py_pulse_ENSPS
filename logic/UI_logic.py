@@ -1,6 +1,8 @@
 from PyQt5.QtWidgets import QCheckBox, QTableWidgetItem, QComboBox, QMainWindow, QMessageBox
 from PyQt5.uic.Compiler.qtproxies import QtWidgets
 from GUI.UI_files.table_widget_test import Ui_MainWindow
+from GUI.UI_files.PS_config_Window_UI import Ui_PS_config_Form
+from GUI.PS_config_window import PS_config_window
 
 
 class UI_general_logic(QMainWindow, Ui_MainWindow):
@@ -60,3 +62,8 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         )
 
         return path_to_file
+
+    def open_PS_config_window(self):
+        if self.PS_conf_win == None:
+            self.PS_conf_win = PS_config_window()
+        self.PS_conf_win.show()
