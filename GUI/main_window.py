@@ -11,6 +11,7 @@ import os
 
 from dask.array import left_shift
 
+from logic.DAQ_logic import DAQ_MFLI
 from logic.pulse_generator_logic import PulseGeneratorLogic
 from logic.pulse_table_logic import PulseTableLogic
 from logic.var_table_logic import VarTableLogic
@@ -78,6 +79,9 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
 
         self.init_first_col()
         self.init_first_row()
+
+        self.pushButton_stop_acquisition.setEnabled(False)
+
         self.pushButton_add_col_left.clicked.connect(self.add_column_left)
         self.pushButton_add_col_right.clicked.connect(self.add_column_right)
         self.pushButton_del_col.clicked.connect(self.remove_column)
@@ -93,7 +97,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.pushButton_pulse_sequence.clicked.connect(self.sequence_preview_button)
         self.pushButton_swap_rows.clicked.connect(self.swap_selected_rows)
         self.pushButton_compute_sequence.clicked.connect(self.sequence_compute_button)
-
+        self.pushButton_start_acquisition.clicked.connect(self.start_acquisition)
+        self.pushButton_stop_acquisition.clicked.connect(self.stop_acquisition)
 
         self.spinBox_step.valueChanged.connect(self.update_num_points)
         self.spinBox_num_points.valueChanged.connect(self.update_step)
@@ -102,11 +107,18 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
 
         self.actionpulseStreamer.triggered.connect(self.open_PS_config_window)
 
+        self.DAQ_data_curve = self.plotwidget_DAQ_data.plot(pen='y')
+        self.DAQ_data_curve.setDownsampling(auto=True)
+        self.DAQ_data_plot_flag = False
+
+
 
         self.load_var_from_cfg()
         self.load_from_cfg()
 
         self.PS_conf_win = None
+        self.thread = None
+        self.daq = None
 
 
 
