@@ -75,6 +75,7 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
 
     def start_acquisition(self):
 
+        self.continuous_plot_cond = False
         self.max_data_points = 10000
         self.DAQ_data = np.empty(self.max_data_points)
         self.DAQ_data[:] = np.nan
@@ -120,14 +121,22 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
     def update_plot(self):
         # self.DAQ_data_plot = np.copy(self.DAQ_data)
 
-        self.DAQ_data_timescale = np.linspace(self.spinBox_min.value(),self.spinBox_min.value()+self.spinBox_step.value()*len(self.DAQ_data), len(self.DAQ_data))
+        # self.DAQ_data_timescale = np.linspace(self.spinBox_min.value(),self.spinBox_min.value()+self.spinBox_step.value()*len(self.DAQ_data), len(self.DAQ_data))
         # self.DAQ_data_timescale = np.linspace(0, self.max_data_points/self.DAQ_data_sampling_rate, self.max_data_points) #for continuous streaming from MFLI
-        self.DAQ_data_curve.setData(self.DAQ_data_timescale, self.DAQ_data)
-
+        try:
+            self.DAQ_data_curve.setData(self.DAQ_data_timescale, self.DAQ_data)
+            self.DAQ_data_markers.setData(self.DAQ_data_timescale, self.DAQ_data)
+        except:
+            pass
 
     def update_data(self, new_value):
-        self.DAQ_data = np.roll(self.DAQ_data, -len(new_value[0]))
-        self.DAQ_data[-len(new_value[0]):] = new_value[0]
-        self.DAQ_data_sampling_rate = new_value[1]
+        if self.continuous_plot_cond:
+            self.DAQ_data = np.roll(self.DAQ_data, -len(new_value[0]))
+            self.DAQ_data[-len(new_value[0]):] = new_value[0]
+            self.DAQ_data_sampling_rate = new_value[1]
+            # self.DAQ_data_timescale = new_value[1]
+        else:
+            self.DAQ_data = new_value[0]
+            self.DAQ_data_timescale = new_value[1][0:len(self.DAQ_data)]
 
 

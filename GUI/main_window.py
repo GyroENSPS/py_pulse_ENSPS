@@ -1,3 +1,4 @@
+import pyqtgraph
 from PyQt5 import QtWidgets, uic
 from PyQt5.QtWidgets import QPushButton, QCheckBox, QTableWidgetItem, QComboBox, QAbstractItemView, QDesktopWidget, \
     QApplication, QFileDialog, QInputDialog
@@ -108,6 +109,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.actionpulseStreamer.triggered.connect(self.open_PS_config_window)
 
         self.DAQ_data_curve = self.plotwidget_DAQ_data.plot(pen='y')
+        self.DAQ_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
+        self.plotwidget_DAQ_data.addItem(self.DAQ_data_markers)
         self.DAQ_data_curve.setDownsampling(auto=True)
         self.DAQ_data_plot_flag = False
 

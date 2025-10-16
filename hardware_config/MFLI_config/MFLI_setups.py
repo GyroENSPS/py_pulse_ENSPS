@@ -1,3 +1,6 @@
+import time
+import numpy as np
+
 def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_repeat=100, number_of_points=200, cyc_time=250e-6):
     # Signal Input
     daq.setInt('/dev30496/demods/0/adcselect', 0)
@@ -57,7 +60,7 @@ def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_re
 
     # print('Current time: ', datetime.time(datetime.now()))
     daq_module.set('grid/cols', number_of_points)
-    daq_module.set('duration', num_repeat * number_of_points * cyc_time / 1e9)
+    daq_module.set('duration', num_repeat * number_of_points * cyc_time)
     # print('Time for measuring point (in s): t = ', num_repeat * cyc_time / 1e9)
     # print('Time for a scan (in s): T = ', num_repeat * cyc_time * number_of_points / 1e9)
     # print('Total duration of the measurement (in min): T = ', round(num_repeat * cyc_time * number_of_points * repetitions / 1e9 / 60, 2))
@@ -84,3 +87,26 @@ def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_re
     daq_module.set('save/directory', '/data/LabOne/WebServer')
     daq_module.set('clearhistory', 1)
     return daq_module
+
+def start_lia_daq_module(daq_module, time_conversion=1, max_time = 1, time_offset=0, repeats=100, num_of_points=200, cycle_time=250e3):
+
+    daq_module.subscribe('/dev30496/demods/0/sample.X.avg')
+    daq_module.subscribe('/dev30496/demods/0/sample.Y.avg')
+    daq_module.subscribe('/dev30496/demods/0/sample.R.avg')
+    daq_module.subscribe('/dev30496/demods/0/sample.phase.avg')
+    dt = repeats*cycle_time
+    daq_module.execute()
+    start = time.time()
+    while not daq_module.finished():
+        time.sleep(dt)
+    result = daq_module.read()
+    daq_module.unsubscribe('*')
+    print('Duration of the measurement (in s): t = ', time.time() - start)
+    demod_x = result['dev30496']['demods']['0']['sample.x.avg'][0]['value'][0]
+    demod_y = result['dev30496']['demods']['0']['sample.y.avg'][0]['value'][0]
+    demod_R = result['dev30496']['demods']['0']['sample.r.avg'][0]['value'][0]
+    demod_phase = result['dev30496']['demods']['0']['sample.phase.avg'][0]['value'][0]
+
+    TIME = np.linspace(time_offset, max_time, num_of_points)
+    # TIME = TIME/max(TIME)*time_conversion + time_offset
+    return TIME, demod_x, demod_y, demod_R, demod_phase
