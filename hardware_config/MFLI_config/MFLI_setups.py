@@ -1,7 +1,7 @@
 import time
 import numpy as np
 
-def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_repeat=100, number_of_points=200, cyc_time=250e-6):
+def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_repeat=100, number_of_points=100, cyc_time=250e-6):
     # Signal Input
     daq.setInt('/dev30496/demods/0/adcselect', 0)
     daq.setInt('/dev30496/sigins/0/imp50', 1)
@@ -30,8 +30,8 @@ def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_re
     # Data Transfer
     daq.setInt('/dev30496/demods/0/enable', 1)
     daq.setDouble('/dev30496/demods/0/rate', 3000.00000000)
-    # daq.setInt('/dev30496/demods/0/trigger', 4)
-    daq.setInt('/dev30496/demods/0/trigger', 128)
+    daq.setInt('/dev30496/demods/0/trigger', 4)
+    # daq.setInt('/dev30496/demods/0/trigger', 128)
     # Output Amplitudes
     daq.setInt('/dev30496/sigouts/0/enables/1', 0)
     # AUX Output 1
@@ -56,7 +56,7 @@ def setup_lia_for_pulsed_measurements(daq,edge, phase=190, repetitions=1, num_re
     daq_module.set('bitmask', 1)
     daq_module.set('eventcount/mode', 1)
     daq_module.set('delay', 0.00000000)
-    daq_module.set('grid/mode', 2)
+    daq_module.set('grid/mode', 4)
 
     # print('Current time: ', datetime.time(datetime.now()))
     daq_module.set('grid/cols', number_of_points)

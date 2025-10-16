@@ -76,7 +76,9 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
     def start_acquisition(self):
 
         self.continuous_plot_cond = False
-        self.max_data_points = 10000
+        self.max_data_points = 1000
+        self.live_data = np.empty(self.max_data_points)
+        self.live_data[:] = np.nan
         self.DAQ_data = np.empty(self.max_data_points)
         self.DAQ_data[:] = np.nan
         self.DAQ_data_timestamp = np.empty(self.max_data_points)
@@ -85,6 +87,7 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         self.timer = QTimer()
         self.timer.setInterval(300)
         self.DAQ_data_sampling_rate = 1
+        self.prev_idx = 0
 
 
         self.thread = QThread()
@@ -94,8 +97,9 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         # Connect signals
         # self.thread.started.connect(self.worker.run_continuous)
         self.thread.started.connect(self.worker.run_triggered)
-        self.worker.data_ready.connect(self.update_data)
-        self.timer.timeout.connect(self.update_plot)
+        self.worker.DAQ_data_ready.connect(self.update_DAQ_data)
+        self.worker.live_data_ready.connect(self.update_live_data)
+        self.timer.timeout.connect(self.update_live_plot)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
@@ -118,7 +122,18 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         self.pushButton_stop_acquisition.setEnabled(False)
         self.timer.stop()
 
-    def update_plot(self):
+    def update_live_plot(self):
+        # self.DAQ_data_plot = np.copy(self.DAQ_data)
+
+        # self.DAQ_data_timescale = np.linspace(self.spinBox_min.value(),self.spinBox_min.value()+self.spinBox_step.value()*len(self.DAQ_data), len(self.DAQ_data))
+        # self.DAQ_data_timescale = np.linspace(0, self.max_data_points/self.DAQ_data_sampling_rate, self.max_data_points) #for continuous streaming from MFLI
+        try:
+            self.live_data_curve.setData(self.live_data_timescale, self.live_data)
+            self.live_data_markers.setData(self.live_data_timescale, self.live_data)
+        except:
+            pass
+
+    def update_DAQ_plot(self):
         # self.DAQ_data_plot = np.copy(self.DAQ_data)
 
         # self.DAQ_data_timescale = np.linspace(self.spinBox_min.value(),self.spinBox_min.value()+self.spinBox_step.value()*len(self.DAQ_data), len(self.DAQ_data))
@@ -129,14 +144,22 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         except:
             pass
 
-    def update_data(self, new_value):
-        if self.continuous_plot_cond:
-            self.DAQ_data = np.roll(self.DAQ_data, -len(new_value[0]))
-            self.DAQ_data[-len(new_value[0]):] = new_value[0]
-            self.DAQ_data_sampling_rate = new_value[1]
-            # self.DAQ_data_timescale = new_value[1]
-        else:
-            self.DAQ_data = new_value[0]
-            self.DAQ_data_timescale = new_value[1][0:len(self.DAQ_data)]
+    def update_DAQ_data(self, new_value):
+        # if self.continuous_plot_cond:
+        #     self.DAQ_data = np.roll(self.DAQ_data, -len(new_value[0]))
+        #     self.DAQ_data[-len(new_value[0]):] = new_value[0]
+        #     self.DAQ_data_sampling_rate = new_value[1]
+        #     self.DAQ_data_timescale = np.linspace(0, len(self.DAQ_data)*self.DAQ_data_sampling_rate, len(self.DAQ_data))
+        # else:
+        self.DAQ_data = new_value[0]
+        self.DAQ_data_timescale = new_value[1]
+        self.update_DAQ_plot()
+
+    def update_live_data(self, new_value):
+        self.live_data = np.roll(self.live_data, -len(new_value[0]))
+        self.live_data[-len(new_value[0]):] = new_value[0]
+        self.live_data_sampling_rate = new_value[1]
+        self.live_data_timescale = np.linspace(0, len(self.live_data)*self.live_data_sampling_rate, len(self.live_data))
+
 
 

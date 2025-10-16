@@ -111,7 +111,13 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.DAQ_data_curve = self.plotwidget_DAQ_data.plot(pen='y')
         self.DAQ_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
         self.plotwidget_DAQ_data.addItem(self.DAQ_data_markers)
-        self.DAQ_data_curve.setDownsampling(auto=True)
+        self.DAQ_data_curve.setDownsampling(auto=False)
+
+        self.live_data_curve = self.plotwidget_live_data.plot(pen='r')
+        self.live_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
+        self.plotwidget_live_data.addItem(self.live_data_markers)
+        self.live_data_curve.setDownsampling(auto=False)
+
         self.DAQ_data_plot_flag = False
 
 
