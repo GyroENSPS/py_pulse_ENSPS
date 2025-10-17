@@ -93,8 +93,8 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         self.DAQ_data_timestamp = np.empty(self.max_data_points)
         self.DAQ_data_timestamp[:] = np.nan
         self.DAQ_data_plot_flag = True
-        self.timer = QTimer()
-        self.timer.setInterval(300)
+        self.plot_timer = QTimer()
+        self.plot_timer.setInterval(300)
         self.DAQ_data_sampling_rate = 1
         self.prev_idx = 0
 
@@ -109,14 +109,14 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         self.worker.DAQ_data_ready.connect(self.update_DAQ_data)
         self.worker.live_data_ready.connect(self.update_live_data)
 
-        self.timer.timeout.connect(self.update_live_plot)
+        self.plot_timer.timeout.connect(self.update_live_plot)
         self.worker.finished.connect(self.thread.quit)
         self.worker.finished.connect(self.timer.stop)
         self.worker.finished.connect(self.worker.deleteLater)
         self.thread.finished.connect(self.thread.deleteLater)
 
         self.thread.start()
-        self.timer.start()
+        self.plot_timer.start()
 
         self.pushButton_start_acquisition.setEnabled(False)
         self.pushButton_stop_acquisition.setEnabled(True)
@@ -131,8 +131,8 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         min_time = self.spinBox_min.value()
         max_time = self.spinBox_max.value()
         print(phase, filter_freq, n_average, n_points)
-        self.worker.run_triggered(phase, filter_freq, n_average, n_points, min_time, max_time)
-
+        # self.worker.run_triggered(phase, filter_freq, n_average, n_points, min_time, max_time)
+        self.worker.run_continuous(phase, filter_freq)
     def update_label(self, data):
         """Update the label when new data is received."""
         self.label_live_data.setText(data)
@@ -175,19 +175,26 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
             self.live_data_curve.setData(self.live_data_timescale, self.live_data)
             self.live_data_markers.setData(self.live_data_timescale, self.live_data)
 
-        except:
+
+        except Exception as e:
+
+            print(f"[Error live plot] {e}")
             pass
         self.live_plot_updating = False
 
     def update_DAQ_plot(self):
         # self.DAQ_data_plot = np.copy(self.DAQ_data)
 
+
+
         # self.DAQ_data_timescale = np.linspace(self.spinBox_min.value(),self.spinBox_min.value()+self.spinBox_step.value()*len(self.DAQ_data), len(self.DAQ_data))
         # self.DAQ_data_timescale = np.linspace(0, self.max_data_points/self.DAQ_data_sampling_rate, self.max_data_points) #for continuous streaming from MFLI
         try:
             self.DAQ_data_curve.setData(self.DAQ_data_timescale, self.DAQ_data)
             self.DAQ_data_markers.setData(self.DAQ_data_timescale, self.DAQ_data)
-        except:
+            print("data plotted")
+        except Exception as e:
+            print(f"[Error DAQ plot] {e}")
             pass
 
     def update_DAQ_data(self, new_value):
@@ -202,11 +209,13 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         self.update_DAQ_plot()
 
     def update_live_data(self, new_value):
+
         self.live_data = np.roll(self.live_data, -len(new_value[0]))
         self.live_data[-len(new_value[0]):] = new_value[0]
         self.live_data_absolute_time = np.roll(self.live_data_absolute_time, -len(new_value[1]))
         self.live_data_absolute_time[-len(new_value[1]):] = new_value[1]
         self.live_data_timescale = self.live_data_absolute_time - self.live_data_absolute_time[-1]
+        print("data ready to plot", np.shape(self.live_data), np.shape(self.live_data_timescale))
 
 
 

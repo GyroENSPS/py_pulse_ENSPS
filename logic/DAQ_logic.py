@@ -26,7 +26,6 @@ class DAQ_MFLI(QObject):
         self._running = True
         self.DAQ_data_plot_flag = True
 
-
         self.session = zhinst.core.ziDAQServer(device_ip, 8004, 6)  # 6 = API Level
 
         self.node_path = f"/{device_id}/demods/{channel}/sample"
@@ -87,34 +86,52 @@ class DAQ_MFLI(QObject):
 
         self.finished.emit()
 
-
-    def run_continuous(self):
+    def run_continuous_dummy(self):
+        print("[DAQ] Running in thread:", QThread.currentThread())
+        # self.session = setup_MFLI_daq_session(self.session, phase = phase, filter_tau= np.sqrt(2**(1/8) - 1) / (2 * np.pi * filter_freq))
 
         """This method runs in the background thread."""
-        t = 0
+        t = [0]
         # Dummy value for testing
+        while self._running:
+            time.sleep(0.02)  # Simuler un échantillonnage à 50 Hz
+            value = [np.sin(2 * np.pi * 0.5 * t[0]) + np.random.normal(0, 0.1)]
+
+            self.live_data_ready.emit((value, t))
+            t[0]+=0.02
+
+    def run_continuous(self, phase, filter_freq):
+        print("[DAQ] Running in thread:", QThread.currentThread())
+        # self.session = setup_MFLI_daq_session(self.session, phase = phase, filter_tau= np.sqrt(2**(1/8) - 1) / (2 * np.pi * filter_freq))
+
+        # """This method runs in the background thread."""
+        # t = [0]
+        # # Dummy value for testing
         # while self._running:
         #     time.sleep(0.02)  # Simuler un échantillonnage à 50 Hz
-        #     value = np.sin(2 * np.pi * 0.5 * t) + np.random.normal(0, 0.1)
-        #     self.DAQ_data_ready.emit(value)
-        #     t += 0.02
+        #     value = [np.sin(2 * np.pi * 0.5 * t[0]) + np.random.normal(0, 0.1)]
+        #
+        #     self.live_data_ready.emit((value, t))
+        #     t[0]+=0.02
         duration = 0.1
         timeout = int(1000 * duration)
         while self._running:
             try:
-
                 data = self.session.poll(duration, timeout, flags=0)
                 # sample = self.session.getSample(f"/{self.device_id}/demods/{self.channel}/sample")
                 # print(data)
                 samples = data[self.device_id]["demods"][str(self.channel)]["sample"]["x"]
+                timestamps = data[self.device_id]["demods"][str(self.channel)]["sample"]["timestamp"]
+                timestamps = timestamps / self.clockbase
                 # print(samples)
-                sampling_rate = self.session.getDouble(f"/{self.device_id}/demods/{self.channel}/rate")
                 # sampling_rate = 1
-                self.DAQ_data_ready.emit((samples, sampling_rate))
+                self.live_data_ready.emit((samples, timestamps))
+                print("live data sent to main thread")
                 # time.sleep(0.01)  # ~100 Hz update rate
             except Exception as e:
                 print(f"[Error] {e}")
                 break
+            time.sleep(0.01)
         self.finished.emit()
 
     def stop(self):
