@@ -494,6 +494,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
             total_tuple_length += len(final_patterns[i])
         self.label_num_tupple.setText(str(total_tuple_length))
         self.label_total_time.setText(str(int(total_measurement_time*1e-9))+"s")
+        self.final_patterns = final_patterns
 
 
 

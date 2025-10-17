@@ -63,8 +63,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         channels = ["DO0","DO1","DO2","DO3","DO4","DO5","DO6","DO7","AO0","AO1"]
         self.comboBox_trigger_per_sequence_channel.addItems(channels)
         self.comboBox_trigger_per_point_channel.addItems(channels)
-        self.comboBox_trigger_per_sequence_channel.setCurrentIndex(6)
-        self.comboBox_trigger_per_point_channel.setCurrentIndex(7)
+        self.comboBox_trigger_per_sequence_channel.setCurrentIndex(9)
+        self.comboBox_trigger_per_point_channel.setCurrentIndex(2)
 
 
 
@@ -100,6 +100,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.pushButton_compute_sequence.clicked.connect(self.sequence_compute_button)
         self.pushButton_start_acquisition.clicked.connect(self.start_acquisition)
         self.pushButton_stop_acquisition.clicked.connect(self.stop_acquisition)
+        self.pushButton_stop_acquisition.clicked.connect(self.reset_PS)
 
         self.spinBox_step.valueChanged.connect(self.update_num_points)
         self.spinBox_num_points.valueChanged.connect(self.update_step)
@@ -119,11 +120,16 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic, UI_general
         self.live_data_curve.setDownsampling(auto=False)
 
         self.DAQ_data_plot_flag = False
+        self.live_plot_updating = False
 
 
 
         self.load_var_from_cfg()
         self.load_from_cfg()
+
+        self.final_patterns = [(0,0) for i in range(0,9)]
+
+        self.PS_thread = None
 
         self.PS_conf_win = None
         self.thread = None
