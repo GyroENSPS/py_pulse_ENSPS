@@ -86,7 +86,7 @@ def setup_MFLI_daq_module(daq, phase=190, filter_tau=10 ,  repetitions=1, number
     daq_module.set('bandwidth', 0.00000000)
     daq_module.set('hysteresis', 0.01000000)
     daq_module.set('level', 0.10000000)
-    daq_module.set('delay', 0.035)
+    daq_module.set('delay', 0.0)
     daq_module.set('triggernode', '/dev30496/demods/0/sample.TrigIn1')
     daq_module.set('save/directory', '/data/LabOne/WebServer')
     daq_module.set('clearhistory', 1)

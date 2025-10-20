@@ -20,7 +20,7 @@ from logic.var_table_logic import VarTableLogic
 import time
 
 import numpy as np
-from PyQt5.QtCore import QThread, QTimer, pyqtSignal
+from PyQt5.QtCore import QThread, QTimer, pyqtSignal, QObject
 from PyQt5.QtWidgets import QCheckBox, QTableWidgetItem, QComboBox, QMainWindow, QMessageBox, QApplication, QFileDialog
 from PyQt5.uic.Compiler.qtproxies import QtWidgets
 from mpmath import phase
@@ -125,13 +125,13 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.actionpulseStreamer.triggered.connect(self.open_PS_config_window)
 
         self.DAQ_data_curve = self.plotwidget_DAQ_data.plot(pen='y')
-        # self.DAQ_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
-        # self.plotwidget_DAQ_data.addItem(self.DAQ_data_markers)
+        self.DAQ_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
+        self.plotwidget_DAQ_data.addItem(self.DAQ_data_markers)
         self.DAQ_data_curve.setDownsampling(auto=False)
 
         self.live_data_curve = self.plotwidget_live_data.plot(pen='r')
-        # self.live_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
-        # self.plotwidget_live_data.addItem(self.live_data_markers)
+        self.live_data_markers = pyqtgraph.ScatterPlotItem(symbol="o")
+        self.plotwidget_live_data.addItem(self.live_data_markers)
         self.live_data_curve.setDownsampling(auto=False)
 
         self.DAQ_data_plot_flag = False
@@ -216,6 +216,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
     def start_acquisition(self):
 
         self.init_PS()
+        self.signals = SignalInterface()
 
         self.plot_timer = QTimer(self)
         self.plot_timer.setInterval(300)
@@ -246,6 +247,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.worker = DAQ_MFLI()
         self.worker.moveToThread(self.thread)
 
+        self.signals.send_params.connect(self.worker.set_parameters)
+
         # Connect signals
         # self.thread.started.connect(self.worker.run_continuous)
 
@@ -269,8 +272,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
 
 
 
-        self.thread.started.connect(self.worker.run_continuous_dummy)
-        # self.thread.started.connect(lambda: self.worker.param_request.emit(phase, filter_freq))
+        # self.thread.started.connect(self.worker.run_continuous_dummy)
+        self.thread.started.connect(lambda : self.modifie_DAQ_params(phase, filter_freq, n_average, n_points, min_time, max_time))
 
         # self.thread.started.connect(self.worker.run_continuous_dummy)
 
@@ -286,6 +289,10 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_stop_acquisition.setEnabled(True)
 
         self.run_PS_continuous()
+
+    def modifie_DAQ_params(self, phase, filter_freq, n_average, n_points, min_time, max_time):
+        params = {"phase" : phase, "filter_freq" : filter_freq, "n_average" : n_average, "n_points" : n_points, "min_time" : min_time, "max_time" : max_time}
+        self.signals.send_params.emit(params)
 
 
     def update_label(self, data):
@@ -319,7 +326,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.plot_timer.stop()
 
     def update_live_plot(self):
-        print("trying to plot...")
+        # print("trying to plot...")
         # self.DAQ_data_plot = np.copy(self.DAQ_data)
         if self.live_plot_updating:
             print("already plotting")
@@ -332,7 +339,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
 
             # self.live_data_timescale = np.linspace(0, len(self.live_data)*self.live_sampling_rate, len(self.live_data))
             self.live_data_curve.setData(self.live_data_timescale, self.live_data)
-            # self.live_data_markers.setData(self.live_data_timescale, self.live_data)
+            self.live_data_markers.setData(self.live_data_timescale, self.live_data)
 
 
         except Exception as e:
@@ -348,8 +355,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         # self.DAQ_data_timescale = np.linspace(0, self.max_data_points/self.DAQ_data_sampling_rate, self.max_data_points) #for continuous streaming from MFLI
         try:
             self.DAQ_data_curve.setData(self.DAQ_data_timescale, self.DAQ_data)
-            # self.DAQ_data_markers.setData(self.DAQ_data_timescale, self.DAQ_data)
-            print("data plotted")
+            self.DAQ_data_markers.setData(self.DAQ_data_timescale, self.DAQ_data)
+            # print("data plotted")
         except Exception as e:
             print("can't plot DAQ data")
             print(f"[Error DAQ plot] {e}")
@@ -384,6 +391,9 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         # self.live_data_sampling_rate = new_value[1]
         # self.live_data_timescale = np.linspace(0, len(self.live_data)*self.live_data_sampling_rate, len(self.live_data))
 
+
+class SignalInterface(QObject):
+    send_params = pyqtSignal(dict)
 
 
 

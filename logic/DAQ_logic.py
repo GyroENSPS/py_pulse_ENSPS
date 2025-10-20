@@ -36,12 +36,30 @@ class DAQ_MFLI(QObject):
 
         self.clockbase = self.session.getInt(f"/{device_id}/clockbase")
 
+    @pyqtSlot(dict)
+    def set_parameters(self, params):
+        print(f"Paramètres mis à jour : {params}")
+
+        phase = params["phase"]
+        filter_freq = params["filter_freq"]
+        n_average = params["n_average"]
+        n_points = params["n_points"]
+        min_time = params["min_time"]
+        max_time = params["max_time"]
+
+        self.session = setup_MFLI_daq_session(self.session, phase=phase,
+                                              filter_tau=np.sqrt(2 ** (1 / 8) - 1) / (2 * np.pi * filter_freq))
+        self.daq_module = setup_MFLI_daq_module(self.session, phase=phase,
+                                                filter_tau=np.sqrt(2 ** (1 / 8) - 1) / (2 * np.pi * filter_freq),
+                                                repetitions=n_average, number_of_points=n_points)
+
+        self.run_triggered(min_time, max_time)
+
 
 
     @pyqtSlot()
-    def run_triggered(self, phase, filter_freq, n_average, n_points, min_time, max_time):
-        self.daq_module = setup_MFLI_daq_module(self.session, phase=phase, filter_tau=np.sqrt(2**(1/8) - 1) / (2 * np.pi * filter_freq),
-                                                repetitions=n_average, number_of_points=n_points)
+    def run_triggered(self, min_time, max_time):
+
         # self.daq_module = setup_lia_for_pulsed_measurements(self.session,edge=2, phase=0, repetitions=1, num_repeat=1, number_of_points=100, cyc_time = 1/130)
 
 
@@ -53,7 +71,7 @@ class DAQ_MFLI(QObject):
             timeout = int(1000 * duration)
             self.daq_module.subscribe('/dev30496/demods/0/sample.X.avg')
             self.daq_module.execute()
-            print("waiting for trigger")
+            # print("waiting for trigger")
             while self._running and not self.daq_module.finished():
                 try:
                     data = self.session.poll(duration, timeout, flags=0)
@@ -75,10 +93,10 @@ class DAQ_MFLI(QObject):
                 result = self.daq_module.read()
                 demod_x = result['dev30496']['demods']['0']['sample.x.avg'][0]['value'][0]
                 samples = demod_x
-                print(samples)
+                # print(samples)
                 time_scale = np.linspace(min_time, max_time*1e-9, len(samples))
                 self.DAQ_data_ready.emit((samples, time_scale))
-                print("data acquired")
+                # print("data acquired")
                 # self._running = False
             except:
                 print("no data acquired")
