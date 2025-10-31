@@ -13,6 +13,7 @@ import os
 from dask.array import left_shift
 
 from logic.DAQ_logic import DAQ_MFLI
+from logic.RF_com_logic import RF_keysight_generators
 from logic.pulse_generator_logic import PulseGeneratorLogic
 from logic.pulse_table_logic import PulseTableLogic
 from logic.var_table_logic import VarTableLogic
@@ -45,6 +46,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
 
         # Redimensionner la fenêtre à cette taille
         self.setGeometry(screen_geometry)
+        self.signals = SignalInterface()
+
 
 
 
@@ -117,6 +120,32 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_stop_acquisition.clicked.connect(self.stop_acquisition)
         self.pushButton_stop_acquisition.clicked.connect(self.reset_PS)
 
+        self.doubleSpinBox_RF1_ch1.editingFinished.connect(self.set_RF_freq)
+        self.doubleSpinBox_RF1_ch2.editingFinished.connect(self.set_RF_freq)
+        self.doubleSpinBox_phase_RF1_ch1.editingFinished.connect(self.set_RF_phase)
+        self.doubleSpinBox_phase_RF1_ch2.editingFinished.connect(self.set_RF_phase)
+        self.doubleSpinBox_Vpp_RF1_ch1.editingFinished.connect(self.set_RF_Vpp)
+        self.doubleSpinBox_Vpp_RF1_ch2.editingFinished.connect(self.set_RF_Vpp)
+        self.checkBox_burst_RF1_ch1.stateChanged.connect(self.set_RF_burst)
+        self.checkBox_burst_RF1_ch2.stateChanged.connect(self.set_RF_burst)
+        self.checkBox_output_RF1_ch1.stateChanged.connect(self.set_RF_output)
+        self.checkBox_output_RF1_ch2.stateChanged.connect(self.set_RF_output)
+        self.doubleSpinBox_RF2_ch1.editingFinished.connect(self.set_RF_freq)
+        self.doubleSpinBox_RF2_ch2.editingFinished.connect(self.set_RF_freq)
+        self.doubleSpinBox_phase_RF2_ch1.editingFinished.connect(self.set_RF_phase)
+        self.doubleSpinBox_phase_RF2_ch2.editingFinished.connect(self.set_RF_phase)
+        self.doubleSpinBox_Vpp_RF2_ch1.editingFinished.connect(self.set_RF_Vpp)
+        self.doubleSpinBox_Vpp_RF2_ch2.editingFinished.connect(self.set_RF_Vpp)
+        self.checkBox_burst_RF2_ch1.stateChanged.connect(self.set_RF_burst)
+        self.checkBox_burst_RF2_ch2.stateChanged.connect(self.set_RF_burst)
+        self.checkBox_output_RF2_ch1.stateChanged.connect(self.set_RF_output)
+        self.checkBox_output_RF2_ch2.stateChanged.connect(self.set_RF_output)
+        self.checkBox_sync_RF1.stateChanged.connect(self.set_RF_freq_sync)
+        self.checkBox_sync_RF2.stateChanged.connect(self.set_RF_freq_sync)
+        self.checkBox_RF1_sync_amp.stateChanged.connect(self.set_RF_Vpp_sync)
+        self.checkBox_RF2_sync_amp.stateChanged.connect(self.set_RF_Vpp_sync)
+
+
         self.spinBox_step.valueChanged.connect(self.update_num_points)
         self.spinBox_num_points.valueChanged.connect(self.update_step)
         self.spinBox_max.valueChanged.connect(self.update_step)
@@ -150,7 +179,124 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.thread = None
         self.daq = None
 
+        self.init_RF_generators()
+
+
         print("[UI] Main thread:", QThread.currentThread())
+
+    def init_RF_generators(self):
+
+        self.RF_thread = QThread()
+        self.RF_worker = RF_keysight_generators()
+        self.RF_worker.moveToThread(self.RF_thread)
+
+        self.signals.send_RF_freq.connect(self.RF_worker.set_frequency)
+        self.signals.send_RF_Vpps.connect(self.RF_worker.set_Vpp)
+        self.signals.send_RF_phases.connect(self.RF_worker.set_phase)
+        self.signals.send_RF_outputs.connect(self.RF_worker.set_output)
+        self.signals.send_RF_burst.connect(self.RF_worker.set_burst)
+
+
+        self.RF_thread.start()
+
+        self.set_RF_init_param()
+
+
+    def set_RF_init_param(self):
+        self.set_RF_burst()
+        self.set_RF_Vpp()
+        self.set_RF_Vpp_sync()
+        self.set_RF_freq()
+        self.set_RF_freq_sync()
+        self.set_RF_burst()
+        self.set_RF_output()
+
+    def set_RF_freq_sync(self):
+        if self.checkBox_sync_RF1.isChecked():
+            self.doubleSpinBox_RF1_ch2.setEnabled(False)
+            self.doubleSpinBox_RF1_ch2.setValue(self.doubleSpinBox_RF1_ch1.value())
+        else :
+            self.doubleSpinBox_RF1_ch2.setEnabled(True)
+
+        if self.checkBox_sync_RF2.isChecked():
+            self.doubleSpinBox_RF2_ch2.setEnabled(False)
+            self.doubleSpinBox_RF2_ch2.setValue(self.doubleSpinBox_RF2_ch1.value())
+        else:
+            self.doubleSpinBox_RF2_ch2.setEnabled(True)
+
+    def set_RF_Vpp_sync(self):
+        if self.checkBox_RF1_sync_amp.isChecked():
+            self.doubleSpinBox_Vpp_RF1_ch2.setEnabled(False)
+            self.doubleSpinBox_Vpp_RF1_ch2.setValue(self.doubleSpinBox_Vpp_RF1_ch1.value())
+        else :
+            self.doubleSpinBox_Vpp_RF1_ch2.setEnabled(True)
+
+        if self.checkBox_RF2_sync_amp.isChecked():
+            self.doubleSpinBox_Vpp_RF2_ch2.setEnabled(False)
+            self.doubleSpinBox_Vpp_RF2_ch2.setValue(self.doubleSpinBox_Vpp_RF2_ch1.value())
+        else:
+            self.doubleSpinBox_Vpp_RF2_ch2.setEnabled(True)
+
+    def set_RF_Vpp(self):
+        self.set_RF_Vpp_sync()
+        Vpps = {
+            "RF1_ch1_Vpp": self.doubleSpinBox_Vpp_RF1_ch1.value(),
+            "RF1_ch2_Vpp": self.doubleSpinBox_Vpp_RF1_ch2.value(),
+            "RF2_ch1_Vpp": self.doubleSpinBox_Vpp_RF2_ch1.value(),
+            "RF2_ch2_Vpp": self.doubleSpinBox_Vpp_RF2_ch2.value(),
+        }
+
+        print(Vpps)
+        self.signals.send_RF_Vpps.emit(Vpps)
+
+    def set_RF_freq(self):
+        self.set_RF_freq_sync()
+        freqs = {
+            "RF1_ch1_freq": self.doubleSpinBox_RF1_ch1.value(),
+            "RF1_ch2_freq": self.doubleSpinBox_RF1_ch2.value(),
+            "RF2_ch1_freq": self.doubleSpinBox_RF2_ch1.value(),
+            "RF2_ch2_freq": self.doubleSpinBox_RF2_ch2.value(),
+        }
+
+        print(freqs)
+        self.signals.send_RF_freq.emit(freqs)
+
+    def set_RF_phase(self):
+        phases = {
+            "RF1_ch1_phase": self.doubleSpinBox_phase_RF1_ch1.value(),
+            "RF1_ch2_phase": self.doubleSpinBox_phase_RF1_ch2.value(),
+            "RF2_ch1_phase": self.doubleSpinBox_phase_RF2_ch1.value(),
+            "RF2_ch2_phase": self.doubleSpinBox_phase_RF2_ch2.value(),
+        }
+
+        print(phases)
+        self.signals.send_RF_phases.emit(phases)
+
+    def set_RF_burst(self):
+        burst = {
+            "RF1_ch1_burst": int(self.checkBox_burst_RF1_ch1.isChecked()),
+            "RF1_ch2_burst": int(self.checkBox_burst_RF1_ch2.isChecked()),
+            "RF2_ch1_burst": int(self.checkBox_burst_RF2_ch1.isChecked()),
+            "RF2_ch2_burst": int(self.checkBox_burst_RF2_ch2.isChecked()),
+            "RF1_ch1_phase": self.doubleSpinBox_phase_RF1_ch1.value(),
+            "RF1_ch2_phase": self.doubleSpinBox_phase_RF1_ch2.value(),
+            "RF2_ch1_phase": self.doubleSpinBox_phase_RF2_ch1.value(),
+            "RF2_ch2_phase": self.doubleSpinBox_phase_RF2_ch2.value(),
+        }
+
+        print(burst)
+        self.signals.send_RF_burst.emit(burst)
+
+    def set_RF_output(self):
+        outputs = {
+            "RF1_ch1_output":int(self.checkBox_output_RF1_ch1.isChecked()),
+            "RF1_ch2_output":int(self.checkBox_output_RF1_ch2.isChecked()),
+            "RF2_ch1_output":int(self.checkBox_output_RF2_ch1.isChecked()),
+            "RF2_ch2_output":int(self.checkBox_output_RF2_ch2.isChecked()),
+        }
+
+        print(outputs)
+        self.signals.send_RF_outputs.emit(outputs)
 
     def update_step(self):
         start = self.spinBox_min.value()
@@ -216,7 +362,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
     def start_acquisition(self):
 
         self.init_PS()
-        self.signals = SignalInterface()
+
 
         self.plot_timer = QTimer(self)
         self.plot_timer.setInterval(300)
@@ -394,6 +540,11 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
 
 class SignalInterface(QObject):
     send_params = pyqtSignal(dict)
+    send_RF_freq = pyqtSignal(dict)
+    send_RF_phases = pyqtSignal(dict)
+    send_RF_burst = pyqtSignal(dict)
+    send_RF_outputs = pyqtSignal(dict)
+    send_RF_Vpps = pyqtSignal(dict)
 
 
 
