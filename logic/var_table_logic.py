@@ -27,9 +27,36 @@ class VarTableLogic(QMainWindow, Ui_MainWindow):
             combo.addItems(self.list_variable_names)
             combo.setCurrentIndex(idx)
 
+    def swap_vars(self, row_id1, row_id2):
+        self.python_var_flag = True
+        col_count = self.tableWidget_var.columnCount()
+        row1 = []
+        row2 = []
+        for col in range(col_count):
+            widget1 = self.tableWidget_var.cellWidget(row_id1, col)
+            widget2 = self.tableWidget_var.cellWidget(row_id2, col)
+
+            if isinstance(widget1, QCheckBox):
+                valeur1 = widget1.isChecked()
+                valeur1 = str(valeur1)
+                valeur2 = widget2.isChecked()
+                valeur2 = str(valeur2)
+            else :
+                item1 = self.tableWidget_var.item(row_id1, col)
+                item2 = self.tableWidget_var.item(row_id2, col)
+                valeur1 = item1.text() if item1 else "0"
+                valeur2 = item2.text() if item2 else "0"
+
+            row1.append(valeur1)
+            row2.append(valeur2)
 
 
+        print("rows swapped : ",row1,row2)
 
+        self.fill_row(row1, row_id2)
+        self.fill_row(row2, row_id1)
+
+        self.python_var_flag = False
 
 
     def create_var_down(self):

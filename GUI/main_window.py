@@ -41,6 +41,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         # uic.loadUi('GUI/UI_files/table_widget_test.ui', self)
         # self.ui = Ui_MainWindow()
 
+        self.python_var_flag = False
+
         # Récupérer la géométrie disponible de l'écran
         screen_geometry = QDesktopWidget().availableGeometry()
 
@@ -182,6 +184,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.init_RF_generators()
 
 
+
         print("[UI] Main thread:", QThread.currentThread())
 
     def init_RF_generators(self):
@@ -200,6 +203,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.RF_thread.start()
 
         self.set_RF_init_param()
+
 
 
     def set_RF_init_param(self):

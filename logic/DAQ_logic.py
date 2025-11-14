@@ -67,8 +67,8 @@ class DAQ_MFLI(QObject):
 
         while self._running:
 
-            duration = 0.00001
-            timeout = int(1000 * duration)
+            duration = 0.1
+            timeout = int(100 * duration)
             self.daq_module.subscribe('/dev30496/demods/0/sample.X.avg')
             self.daq_module.execute()
             # print("waiting for trigger")
@@ -132,7 +132,7 @@ class DAQ_MFLI(QObject):
         #     self.live_data_ready.emit((value, t))
         #     t[0]+=0.02
         duration = 0.1
-        timeout = int(1000 * duration)
+        timeout = int(100 * duration)
         while self._running:
             try:
                 data = self.session.poll(duration, timeout, flags=0)

@@ -33,6 +33,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
                 except:
                     run_cond = True
                     print("problem with row ", row)
+
                     pass
 
             for var_name in var_names:
