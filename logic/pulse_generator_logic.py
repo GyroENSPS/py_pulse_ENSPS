@@ -403,7 +403,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
         print("number of measurement points : ", num_meas_points)
         self.final_sequenceGenerator(pulse_durations, pulse_matrix, variable_index, param_per_col, num_meas_points, n_repeat, min_meas, max_meas)
-
+        self.sequence_preview_button()
 
     def sequenceGenerator(self, pulses_length, IO_states, var_index, param_per_col, num_of_points, n_repeat, min_meas, max_meas, plot_cond = False):
         ############# Generate measurement sequences
@@ -500,6 +500,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
         point_trigger_IO = np.zeros(2 * num_of_points)
 
         for idx, point in enumerate(meas_points):
+            self.progressBar.setValue(int(idx/len(meas_points)*100)+1)
             for i in var_conds_idx:
                 var_instructions[i] = str(point)
             new_params = self.update_pulse_durations(var_names, var_instructions)
