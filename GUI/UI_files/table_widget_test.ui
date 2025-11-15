@@ -13,6 +13,10 @@
   <property name="windowTitle">
    <string>PyPulse</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="resources.qrc">
+    <normaloff>:/icons/icons/main_icon.ico</normaloff>:/icons/icons/main_icon.ico</iconset>
+  </property>
   <widget class="QWidget" name="centralwidget">
    <layout class="QVBoxLayout" name="verticalLayout_4" stretch="0">
     <property name="bottomMargin">
@@ -45,29 +49,93 @@
               </property>
               <item>
                <widget class="QPushButton" name="pushButton_add_col_right">
-                <property name="text">
+                <property name="statusTip">
                  <string>add column to the right</string>
+                </property>
+                <property name="whatsThis">
+                 <string>add column to the right</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources.qrc">
+                  <normaloff>:/icons/icons/add_col_right.png.png</normaloff>:/icons/icons/add_col_right.png.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>40</width>
+                  <height>40</height>
+                 </size>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_add_col_left">
-                <property name="text">
+                <property name="statusTip">
                  <string>add column to the left</string>
+                </property>
+                <property name="whatsThis">
+                 <string>add column to the left</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources.qrc">
+                  <normaloff>:/icons/icons/add_col_left.png</normaloff>:/icons/icons/add_col_left.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>40</width>
+                  <height>40</height>
+                 </size>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_move_left">
-                <property name="text">
+                <property name="statusTip">
                  <string>move column to the left</string>
+                </property>
+                <property name="whatsThis">
+                 <string>move column to the left</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources.qrc">
+                  <normaloff>:/icons/icons/move_col_left.png</normaloff>:/icons/icons/move_col_left.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>40</width>
+                  <height>40</height>
+                 </size>
                 </property>
                </widget>
               </item>
               <item>
                <widget class="QPushButton" name="pushButton_move_right">
-                <property name="text">
+                <property name="statusTip">
                  <string>move column to the right</string>
+                </property>
+                <property name="whatsThis">
+                 <string>move column to the right</string>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="icon">
+                 <iconset resource="resources.qrc">
+                  <normaloff>:/icons/icons/move_col_right.png</normaloff>:/icons/icons/move_col_right.png</iconset>
+                </property>
+                <property name="iconSize">
+                 <size>
+                  <width>40</width>
+                  <height>40</height>
+                 </size>
                 </property>
                </widget>
               </item>
@@ -105,6 +173,19 @@
                  <string>save config</string>
                 </property>
                </widget>
+              </item>
+              <item>
+               <spacer name="horizontalSpacer_8">
+                <property name="orientation">
+                 <enum>Qt::Horizontal</enum>
+                </property>
+                <property name="sizeHint" stdset="0">
+                 <size>
+                  <width>40</width>
+                  <height>20</height>
+                 </size>
+                </property>
+               </spacer>
               </item>
              </layout>
             </item>
@@ -1760,6 +1841,8 @@ background-color: rgba(26, 134, 211, 60);</string>
    <container>1</container>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="resources.qrc"/>
+ </resources>
  <connections/>
 </ui>

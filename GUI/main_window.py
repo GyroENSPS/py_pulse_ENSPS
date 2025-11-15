@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QPushButton, QCheckBox, QTableWidgetItem, QComboBox,
     QApplication, QFileDialog, QInputDialog
 from astropy.utils.misc import coffee
 #
+from GUI.UI_files import resources_rc
 from GUI.UI_files.table_widget_test import Ui_MainWindow
 import configparser
 from PyQt5.QtWidgets import QHeaderView

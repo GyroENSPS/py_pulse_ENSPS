@@ -1,0 +1,9 @@
+<RCC>
+  <qresource prefix="/icons">
+    <file>icons/add_col_left.png</file>
+    <file>icons/move_col_left.png</file>
+    <file>icons/move_col_right.png</file>
+    <file>icons/add_col_right.png.png</file>
+    <file>icons/main_icon.ico</file>
+  </qresource>
+</RCC>
