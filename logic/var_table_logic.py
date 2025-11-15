@@ -27,6 +27,11 @@ class VarTableLogic(QMainWindow, Ui_MainWindow):
             combo.addItems(self.list_variable_names)
             combo.setCurrentIndex(idx)
 
+    def update_var_table(self):
+        if not self.python_var_flag:
+            self.export_for_pulse_viewer()
+            self.update_param_names()
+
     def swap_vars(self, row_id1, row_id2):
         self.python_var_flag = True
         col_count = self.tableWidget_var.columnCount()
@@ -39,6 +44,7 @@ class VarTableLogic(QMainWindow, Ui_MainWindow):
             if isinstance(widget1, QCheckBox):
                 valeur1 = widget1.isChecked()
                 valeur1 = str(valeur1)
+            if isinstance(widget2, QCheckBox):
                 valeur2 = widget2.isChecked()
                 valeur2 = str(valeur2)
             else :
@@ -70,6 +76,8 @@ class VarTableLogic(QMainWindow, Ui_MainWindow):
     def create_var(self, row_idx):
         var_name = "param_" + str(row_idx)
         self.tableWidget_var.setItem(row_idx, 0, QTableWidgetItem(var_name))
+        var_val = str(0)
+        self.tableWidget_var.setItem(row_idx, 1, QTableWidgetItem(var_val))
         btn = QCheckBox()
         btn.clicked.connect(lambda _, r=row_idx, c=3: self.var_bouton_clique(r, c))
         self.tableWidget_var.setCellWidget(row_idx, 3, btn)

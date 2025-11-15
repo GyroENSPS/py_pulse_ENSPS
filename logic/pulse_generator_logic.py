@@ -3,6 +3,7 @@ import pyqtgraph
 from PyQt5.QtWidgets import QMainWindow, QCheckBox
 from PyQt5 import QtCore
 from PyQt5.QtGui import QColor
+from astropy.extern.ply.yacc import error_count
 from tifffile import enumarg
 
 from GUI.UI_files.table_widget_test import Ui_MainWindow
@@ -10,12 +11,13 @@ import matplotlib.pyplot as plt
 
 class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
-    def create_python_var(self):
+    def sort_python_var(self):
         row_count = self.tableWidget_var.rowCount()
         var_names = [None] * row_count
         var_values = [None] * row_count
         run_cond = True
-        while run_cond:
+        py_var_error_count = 0
+        while run_cond and py_var_error_count<100:
             run_cond = False
             for row in range(row_count):
                 item = self.tableWidget_var.item(row, 0)
@@ -32,9 +34,53 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
                     exec("var_values[row] =" + var_name_str)
                 except:
                     run_cond = True
+                    py_var_error_count+=1
+
                     print("problem with row ", row)
 
+                    if row<row_count-1 :
+                        self.swap_vars(row, row+1)
+                        print("swapped rows ", row, "and ", row+1)
+
+
                     pass
+
+            for var_name in var_names:
+                try:
+                    exec("print(" + var_name + ")")
+                except:
+                    print("Problem")
+                    pass
+        self.create_python_var()
+
+
+    def create_python_var(self):
+        row_count = self.tableWidget_var.rowCount()
+        var_names = [None] * row_count
+        var_values = [None] * row_count
+        run_cond = True
+        py_var_error_count = 0
+        while run_cond and py_var_error_count<100:
+            run_cond = False
+            for row in range(row_count):
+                item = self.tableWidget_var.item(row, 0)
+                var_name_str = item.text()
+                var_names[row] = var_name_str
+                item = self.tableWidget_var.item(row, 1)
+                var_value_str = item.text()
+                # var_name_str = "self.user_var_" + var_name_str
+                code_line = var_name_str + "=" + var_value_str
+
+                print(row)
+                try:
+                    exec(code_line)
+                    exec("var_values[row] =" + var_name_str)
+                except:
+                    run_cond = True
+                    py_var_error_count+=1
+                    print("problem with row ", row)
+                    pass
+            print("py_var_error_count : ", py_var_error_count)
 
             for var_name in var_names:
                 try:

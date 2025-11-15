@@ -83,6 +83,10 @@ class Ui_MainWindow(object):
         self.pushButton_load_var = QtWidgets.QPushButton(self.tab)
         self.pushButton_load_var.setObjectName("pushButton_load_var")
         self.horizontalLayout_4.addWidget(self.pushButton_load_var)
+        self.pushButton_sort_py_vars = QtWidgets.QPushButton(self.tab)
+        self.pushButton_sort_py_vars.setToolTip("")
+        self.pushButton_sort_py_vars.setObjectName("pushButton_sort_py_vars")
+        self.horizontalLayout_4.addWidget(self.pushButton_sort_py_vars)
         self.verticalLayout.addLayout(self.horizontalLayout_4)
         self.tableWidget_var = QtWidgets.QTableWidget(self.tab)
         self.tableWidget_var.setRowCount(1)
@@ -821,7 +825,7 @@ class Ui_MainWindow(object):
         self.menubar.addAction(self.menuConfig.menuAction())
 
         self.retranslateUi(MainWindow)
-        self.tabWidget.setCurrentIndex(2)
+        self.tabWidget.setCurrentIndex(0)
         QtCore.QMetaObject.connectSlotsByName(MainWindow)
 
     def retranslateUi(self, MainWindow):
@@ -839,6 +843,9 @@ class Ui_MainWindow(object):
         self.pushButton_add_var_down.setText(_translate("MainWindow", "add parameter"))
         self.pushButton_save_var.setText(_translate("MainWindow", "save config"))
         self.pushButton_load_var.setText(_translate("MainWindow", "load config"))
+        self.pushButton_sort_py_vars.setStatusTip(_translate("MainWindow", "sort parameters to optimize pulse sequence calculation"))
+        self.pushButton_sort_py_vars.setWhatsThis(_translate("MainWindow", "sort parameters to optimize pulse sequence calculation"))
+        self.pushButton_sort_py_vars.setText(_translate("MainWindow", "sort parameters"))
         item = self.tableWidget_var.horizontalHeaderItem(0)
         item.setText(_translate("MainWindow", "name"))
         item = self.tableWidget_var.horizontalHeaderItem(1)

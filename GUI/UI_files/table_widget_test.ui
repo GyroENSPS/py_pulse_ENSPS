@@ -21,7 +21,7 @@
     <item>
      <widget class="QTabWidget" name="tabWidget">
       <property name="currentIndex">
-       <number>2</number>
+       <number>0</number>
       </property>
       <widget class="QWidget" name="tab">
        <attribute name="title">
@@ -162,6 +162,22 @@
                <widget class="QPushButton" name="pushButton_load_var">
                 <property name="text">
                  <string>load config</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pushButton_sort_py_vars">
+                <property name="toolTip">
+                 <string extracomment="sort parameters to optimize pulse sequence calculation"/>
+                </property>
+                <property name="statusTip">
+                 <string>sort parameters to optimize pulse sequence calculation</string>
+                </property>
+                <property name="whatsThis">
+                 <string>sort parameters to optimize pulse sequence calculation</string>
+                </property>
+                <property name="text">
+                 <string>sort parameters</string>
                 </property>
                </widget>
               </item>

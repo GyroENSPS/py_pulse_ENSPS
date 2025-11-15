@@ -92,10 +92,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.tableWidget.setVerticalHeaderLabels(["length","DO0","DO1","DO2","DO3","DO4","DO5","DO6","DO7","AO0","AO1"])
         # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.resizeColumnsToContents()
-        self.tableWidget_var.itemChanged.connect(self.update_param_names)
-        self.tableWidget_var.itemChanged.connect(self.export_for_pulse_viewer)
-        self.tableWidget_var.itemChanged.connect(self.create_python_var)
-        self.tableWidget.itemChanged.connect(self.export_for_pulse_viewer)
+        self.tableWidget_var.itemChanged.connect(self.update_var_table)
+        self.tableWidget.itemChanged.connect(self.update_var_table)
 
 
         self.init_first_col()
@@ -113,7 +111,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_add_var_down.clicked.connect(self.create_var_down)
         self.pushButton_save_var.clicked.connect(self.click_save_var_config)
         self.pushButton_load_var.clicked.connect(self.click_load_var_from_cfg)
-        self.pushButton_plot_pulse.clicked.connect(self.export_for_pulse_viewer)
+        self.pushButton_plot_pulse.clicked.connect(self.update_var_table)
         self.pushButton_invert.clicked.connect(self.invert_row)
         self.pushButton_pulse_sequence.clicked.connect(self.sequence_preview_button)
         self.pushButton_swap_rows.clicked.connect(self.swap_selected_rows)
@@ -121,6 +119,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.pushButton_start_acquisition.clicked.connect(self.start_acquisition)
         self.pushButton_stop_acquisition.clicked.connect(self.stop_acquisition)
         self.pushButton_stop_acquisition.clicked.connect(self.reset_PS)
+        self.pushButton_sort_py_vars.clicked.connect(self.sort_python_var)
+
 
         self.doubleSpinBox_RF1_ch1.editingFinished.connect(self.set_RF_freq)
         self.doubleSpinBox_RF1_ch2.editingFinished.connect(self.set_RF_freq)
@@ -182,6 +182,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.daq = None
 
         self.init_RF_generators()
+
+
 
 
 
