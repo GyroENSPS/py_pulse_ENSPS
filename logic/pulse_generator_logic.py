@@ -8,6 +8,7 @@ from tifffile import enumarg
 
 from GUI.UI_files.table_widget_test import Ui_MainWindow
 import matplotlib.pyplot as plt
+from logic import *
 
 class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
@@ -40,6 +41,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
                     if row<row_count-1 :
                         self.swap_vars(row, row+1)
+                        self.change_combobox_idx(row, row+1)
                         print("swapped rows ", row, "and ", row+1)
 
 
@@ -51,10 +53,11 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
                 except:
                     print("Problem")
                     pass
+        self.update_param_names()
         self.create_python_var()
 
-
     def create_python_var(self):
+        print("create_python_var")
         row_count = self.tableWidget_var.rowCount()
         var_names = [None] * row_count
         var_values = [None] * row_count
@@ -71,7 +74,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
                 # var_name_str = "self.user_var_" + var_name_str
                 code_line = var_name_str + "=" + var_value_str
 
-                print(row)
+                #print(row)
                 try:
                     exec(code_line)
                     exec("var_values[row] =" + var_name_str)
@@ -84,13 +87,15 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
 
             for var_name in var_names:
                 try:
-                    exec("print(" + var_name + ")")
+                    #exec("print(" + var_name + ")")
+                    pass
                 except:
                     print("Problem")
                     pass
         return var_values
 
     def export_for_pulse_viewer(self):
+        print("export_for_pulse_viewer")
         self.tabWidget.setCurrentIndex(0)
 
 
@@ -159,7 +164,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
             end_pulses_length[element] = max_measurement  # changes the pulse sequence with the variable parameter
             # end_measurement_range = sum(end_pulses_length[:element + 1])
             end_measurement_range = begin_measurement_range + (max_measurement-min_measurement)
-            print(begin_measurement_range, end_measurement_range)
+
             region = pyqtgraph.LinearRegionItem(
                 values=(begin_measurement_range, end_measurement_range),
                 orientation=pyqtgraph.LinearRegionItem.Vertical

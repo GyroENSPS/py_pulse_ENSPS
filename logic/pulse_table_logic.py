@@ -61,9 +61,18 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
     def create_combobox(self, col_idx):
         combo = QComboBox()
         combo.addItems(self.list_variable_names)
-        combo.currentIndexChanged.connect(lambda index, c=combo: self.bouton_clique())
+        combo.activated.connect(lambda index, c=combo: self.bouton_clique())
 
         return combo
+
+    def change_combobox_idx(self, old_idx, new_idx):
+        col_count = self.tableWidget.columnCount()
+        for col_idx in range(col_count):
+            combo = self.tableWidget.cellWidget(0, col_idx)
+            cur_idx = combo.currentIndex()
+            if cur_idx == old_idx:
+                combo. setCurrentIndex(new_idx)
+
 
 
 
@@ -123,7 +132,8 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
 
     def bouton_clique(self):
         try:
-            self.export_for_pulse_viewer()
+            print("bouton_clique")
+            self.update_tab_display()
         except:
             pass
 

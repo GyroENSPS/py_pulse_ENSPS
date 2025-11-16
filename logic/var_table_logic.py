@@ -28,9 +28,10 @@ class VarTableLogic(QMainWindow, Ui_MainWindow):
             combo.setCurrentIndex(idx)
 
     def update_var_table(self):
+        print("update_var_table : python_var_flag = ", self.python_var_flag)
         if not self.python_var_flag:
-            self.export_for_pulse_viewer()
             self.update_param_names()
+            self.export_for_pulse_viewer()
 
     def swap_vars(self, row_id1, row_id2):
         self.python_var_flag = True

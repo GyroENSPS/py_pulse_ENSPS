@@ -43,6 +43,7 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         # self.ui = Ui_MainWindow()
 
         self.python_var_flag = False
+        self.flag_update_display = False
 
         # Récupérer la géométrie disponible de l'écran
         screen_geometry = QDesktopWidget().availableGeometry()
@@ -93,8 +94,8 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.tableWidget.setVerticalHeaderLabels(["length","DO0","DO1","DO2","DO3","DO4","DO5","DO6","DO7","AO0","AO1"])
         # self.tableWidget.horizontalHeader().setSectionResizeMode(QHeaderView.Stretch)
         self.tableWidget.resizeColumnsToContents()
-        self.tableWidget_var.itemChanged.connect(self.update_var_table)
-        self.tableWidget.itemChanged.connect(self.update_var_table)
+        self.tableWidget_var.itemChanged.connect(self.update_tab_display)
+        self.tableWidget.itemChanged.connect(self.update_tab_display)
 
 
         self.init_first_col()
@@ -189,6 +190,13 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
 
 
         print("[UI] Main thread:", QThread.currentThread())
+
+    def update_tab_display(self):
+        print("update_tab_display : flag_update_display = ", self.flag_update_display)
+        try:
+            self.update_var_table()
+        except:
+            pass
 
     def init_RF_generators(self):
 
