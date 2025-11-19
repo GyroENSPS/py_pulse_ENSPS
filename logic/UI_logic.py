@@ -133,6 +133,7 @@ class UI_general_logic(QMainWindow, Ui_MainWindow):
         print(phase, filter_freq, n_average, n_points)
         # self.worker.run_triggered(phase, filter_freq, n_average, n_points, min_time, max_time)
         self.worker.run_continuous(phase, filter_freq)
+
     def update_label(self, data):
         """Update the label when new data is received."""
         self.label_live_data.setText(data)

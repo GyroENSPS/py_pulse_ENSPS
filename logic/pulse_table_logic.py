@@ -45,13 +45,13 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
 
                                         QCheckBox::indicator:unchecked {
                                             image: none;
-                                            border: white;
-                                            background-color: white;
+                                            border: black;
+                                            background-color: black;
                                         }
 
                                         QCheckBox::indicator:checked {
                                             image: none;
-                                            border: white;
+                                            border: black;
                                             background-color: """ + self.channel_colors[row - 1] + """;
                                         }
                                     """)
@@ -230,7 +230,6 @@ class PulseTableLogic(QMainWindow, Ui_MainWindow):
         for col in range(col_count):
             widget = self.tableWidget.cellWidget(index, col)
             widget.setChecked(new_row[col].strip().lower() == "true")
-
 
     def copy_column(self, index):
         row_count = self.tableWidget.rowCount()

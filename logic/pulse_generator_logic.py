@@ -193,7 +193,7 @@ class PulseGeneratorLogic(QMainWindow, Ui_MainWindow):
             IO_R1234_plot_temp.append(IO_R1234_plot_temp[-1])
             IO_R1234_plot[i] = self.rotate(IO_R1234_plot_temp, -1)
             fill_color = QColor(self.channel_colors[i])
-            fill_color.setAlphaF(0.2)  # 0.2 = 20% opaque (donc 80% transparent)
+            fill_color.setAlphaF(0.5)
 
             self.pulse_view.plot(pulses_timings, IO_R1234_plot[i], label=channel_labels[i], pen=pyqtgraph.mkPen(color=self.channel_colors[i], width=2), brush = fill_color, fillLevel=plot_offset_counter * plot_offset)
 

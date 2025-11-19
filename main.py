@@ -1,5 +1,6 @@
 from PyQt5 import QtWidgets
 from PyQt5.QtCore import QLocale
+import qdarkstyle
 
 QLocale.setDefault(QLocale(QLocale.English, QLocale.UnitedStates))
 
@@ -9,6 +10,7 @@ from GUI.main_window import MainWindow
 from logic.DAQ_logic import DAQ_MFLI
 
 app = QtWidgets.QApplication(sys.argv)
+app.setStyleSheet(qdarkstyle.load_stylesheet_pyqt5())
 
 window = MainWindow()
 

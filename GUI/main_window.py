@@ -73,10 +73,10 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
                             ]
         self.list_variable_names = []
 
-        self.pulse_view.setBackground("w")
+        # self.pulse_view.setBackground("w")
         self.pulse_view.hideAxis('left')
 
-        self.pulse_sequence_view.setBackground("w")
+        # self.pulse_sequence_view.setBackground("w")
         self.pulse_sequence_view.hideAxis('left')
 
         self.tableWidget.setRowCount(11)
@@ -214,8 +214,6 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
         self.RF_thread.start()
 
         self.set_RF_init_param()
-
-
 
     def set_RF_init_param(self):
         self.set_RF_burst()
@@ -454,7 +452,6 @@ class MainWindow(PulseTableLogic, VarTableLogic, PulseGeneratorLogic):
     def modifie_DAQ_params(self, phase, filter_freq, n_average, n_points, min_time, max_time):
         params = {"phase" : phase, "filter_freq" : filter_freq, "n_average" : n_average, "n_points" : n_points, "min_time" : min_time, "max_time" : max_time}
         self.signals.send_params.emit(params)
-
 
     def update_label(self, data):
         """Update the label when new data is received."""
